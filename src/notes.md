@@ -12,7 +12,10 @@ Prelude>  :t    # (:t alias for :type) Get the type of a value. Ex: :type 23
 ### Using a module
 ```bash
 Prelude> :l src/MyFile.hs   # (:l alias for :load) Load the module file
-MyFile> :r                 # (:r alias for :reload) reload the module (no need to specify the name)
+MyFile> :r                  # (:r alias for :reload) reload the module (no need to specify the name)
+MyFile> :main               # Trigger the "main" function of a loaded module
+MyFile> :set editor vim     # Set the editor launched when using the `:edit` command
+MyFile> :e                  # (:e alias for :edit) Open the current module in the editor set up with the `:set editor` command
 ```
 
 ### Mutli line instructions
