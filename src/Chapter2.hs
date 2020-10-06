@@ -76,7 +76,7 @@ When working with lists, the most practical module will be "Data.List":
 -}
 
 
-{- |
+{-
 =🛡= Lists
 
 __List__ is a crucial data type in Haskell and functional programming
@@ -128,7 +128,7 @@ work with lists. And you will need to operate a lot with standard
 functions in the upcoming exercises. Remember, Hoogle is your friend!
 -}
 
-{- |
+{-
 =⚔️= Task 1
 
 Explore lists by checking types of various list expressions and
@@ -176,7 +176,7 @@ Join a list of strings with line breaks:
 
 -}
 
-{- |
+{-
 =⚔️= Task 2
 
 To understand the list type better, it is also beneficial to play with
@@ -233,7 +233,7 @@ ghci> [True, False] ++ "string"
 
 -}
 
-{- |
+{-
 =🛡= Immutability
 
 At this point in our training, you need to learn that all values in
@@ -254,7 +254,7 @@ original list, so you don't need to worry about accidentally spoiling
 values of variables you defined before.
 -}
 
-{- |
+{-
 =🛡= List implementation
 
 Let's talk a bit about list implementation details. Lists in Haskell
@@ -310,7 +310,7 @@ process.
 
 -}
 
-{- |
+{-
 =⚔️= Task 3
 
 Let's write our first function to process lists in Haskell! Your first
@@ -336,9 +336,12 @@ from it!
 ghci> :l src/Chapter2.hs
 -}
 subList :: Int -> Int -> [a] -> [a]
-subList = error "subList: Not implemented!"
+subList start end list =
+  if start < 0 || end < 0 || start > end
+  then []
+  else take (end - start + 1) (drop start list)
 
-{- |
+{-
 =⚔️= Task 4
 
 Implement a function that returns only the first half of a given list.
@@ -348,11 +351,12 @@ Implement a function that returns only the first half of a given list.
 >>> firstHalf "bca"
 "b"
 -}
--- PUT THE FUNCTION TYPE IN HERE
-firstHalf l = error "firstHalf: Not implemented!"
+
+firstHalf :: [a] -> [a]
+firstHalf list = subList 0 (((length list) `div` 2) -1  ) list
 
 
-{- |
+{-
 =🛡= Pattern matching
 
 One of the coolest and most powerful features of Functional
@@ -489,7 +493,7 @@ the same as writing "(x:(y:xs))".
   checker from the Haskell compiler.
 -}
 
-{- |
+{-
 =⚔️= Task 5
 
 Implement a function that checks whether the third element of a list
@@ -500,10 +504,13 @@ True
 >>> isThird42 [42, 42, 0, 42]
 False
 -}
-isThird42 = error "isThird42: Not implemented!"
+isThird42 :: [Int] -> Bool
+isThird42 (_ : _ : third : _) =  third == 42
+isThird42 _ = False
 
 
-{- |
+
+{-
 =🛡= Recursion
 
 Often, when writing in a functional style, you end up implementing the
@@ -590,8 +597,22 @@ And it works like this:
 [2,1,3,1,2,3,4,0,5]
 -}
 
+newConcat :: [[a]] -> [a]
+newConcat [] = []
+newConcat (x:xs) = x ++ newConcat xs
 
-{- |
+newLength :: [a] -> Int
+newLength [] = 0
+newLength (x:xs) = 1 + newLength xs
+
+newDivToZero :: Int -> Int
+newDivToZero n = go 0 n
+  where
+    go :: Int -> Int -> Int
+    go acc 0 = acc
+    go acc n = go (acc + 1) (div n 2)
+
+{-
 =⚔️= Task 6
 
 Implement a function that duplicates each element of the list
@@ -605,10 +626,11 @@ Implement a function that duplicates each element of the list
 
 -}
 duplicate :: [a] -> [a]
-duplicate = error "duplicate: Not implemented!"
+duplicate [] = []
+duplicate (x : xs) = x : x : duplicate xs
 
 
-{- |
+{-
 =⚔️= Task 7
 Write a function that takes elements of a list only on even positions.
 
@@ -620,9 +642,15 @@ Write a function that takes elements of a list only on even positions.
 >>> takeEven [2, 1, 3, 5, 4]
 [2,3,4]
 -}
-takeEven = error "takeEven: Not implemented!"
+isEven :: Int -> Bool
+isEven n = n `mod` 2 == 0
 
-{- |
+takeEven :: [Int] -> [Int]
+takeEven [] = []
+takeEven (x : _ : xs ) = x : takeEven xs
+takeEven (x : xs ) = [x]
+
+{-
 =🛡= Higher-order functions
 
 Some functions can take other functions as arguments. Such functions
@@ -715,7 +743,12 @@ map f (x:xs) = f x : map f xs
 Now you can see that there is nothing magic in HOFs in the end!
 -}
 
-{- |
+
+newMap :: (a -> b) -> [a] -> [b]
+newMap _ [] = []
+newMap f (x:xs) = (f x) : newMap f xs
+
+{-
 =⚔️= Task 8
 
 Implement a function that repeats each element so many times as the
@@ -727,9 +760,10 @@ value of the element itself
 🕯 HINT: Use combination of 'map' and 'replicate'
 -}
 smartReplicate :: [Int] -> [Int]
-smartReplicate l = error "smartReplicate: Not implemented!"
+smartReplicate [] = []
+smartReplicate (x:xs) = (replicate x x) ++ smartReplicate xs
 
-{- |
+{-
 =⚔️= Task 9
 
 Implement a function that takes a number, a list of lists and returns
@@ -740,10 +774,11 @@ the list with only those lists that contain a passed element.
 
 🕯 HINT: Use the 'elem' function to check whether an element belongs to a list
 -}
-contains = error "contains: Not implemented!"
+contains :: Int -> [[Int]] -> [[Int]]
+contains x = filter(elem x)
 
 
-{- |
+{-
 =🛡= Eta-reduction
 
 Another consequence of the HOFs and partial application is
@@ -773,22 +808,22 @@ nextInt = add 1
   amend its usage in the function body.
 -}
 
-{- |
+{-
 =⚔️= Task 10
 
 Let's now try to eta-reduce some of the functions and ensure that we
 mastered the skill of eta-reducing.
 -}
 divideTenBy :: Int -> Int
-divideTenBy x = div 10 x
+divideTenBy = div 10
 
--- TODO: type ;)
-listElementsLessThan x l = filter (< x) l
+listElementsLessThan :: Int -> [Int] -> [Int]
+listElementsLessThan x = filter (< x)
 
--- Can you eta-reduce this one???
-pairMul xs ys = zipWith (*) xs ys
+pairMul :: [Int] -> [Int] -> [Int]
+pairMul = zipWith (*)
 
-{- |
+{-
 =🛡= Lazy evaluation
 
 Another unique Haskell feature is __lazy evaluation__. Haskell is lazy
@@ -822,7 +857,7 @@ Infinity Stone!
   infinite lists.
 -}
 
-{- |
+{-
 =⚔️= Task 11
 
 Rotating a list by a single element is the process of moving the first
@@ -841,9 +876,12 @@ list.
 
 🕯 HINT: Use the 'cycle' function
 -}
-rotate = error "rotate: Not implemented!"
+rotate :: Int -> [Int] -> [Int]
+rotate times xs
+  | times < 0 = []
+  | otherwise = take (length xs) (drop times (cycle xs))
 
-{- |
+{-
 =💣= Task 12*
 
 Now you should be ready for the final boss at the end of this chapter!
@@ -857,7 +895,9 @@ and reverses it.
   function, but in this task, you need to implement it manually. No
   cheating!
 -}
-rewind = error "rewind: Not Implemented!"
+rewind :: [a] -> [a]
+rewind [] = []
+rewind (x:xs) = ( rewind xs ) ++ [ x ]
 
 
 {-
